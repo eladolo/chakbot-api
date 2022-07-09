@@ -40,6 +40,7 @@ router.twitch.routes(app);
 // default response
 app.get('/*', async (req, res) => {
     res.status(201).json({
+    	code: 404,
         data: "Hello api 🌼"
     });
 });
