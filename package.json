@@ -8,6 +8,7 @@
   "main": "server.js",
   "scripts": {
     "api": "nodemon ./server.js",
+    "api-prod": "node server.js",
     "test": "node test.js"
   },
   "dependencies": {
