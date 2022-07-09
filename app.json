@@ -1,8 +1,8 @@
 {
-  "name": "Start on Heroku: Node.js",
-  "description": "A barebones Node.js app using Express 4",
-  "repository": "https://github.com/heroku/node-js-getting-started",
-  "logo": "https://cdn.rawgit.com/heroku/node-js-getting-started/main/public/node.svg",
-  "keywords": ["node", "express", "heroku"],
-  "image": "heroku/nodejs"
+  "name": "chakstudio API",
+  "description": "A Node.js CRUD api",
+  "repository": "https://github.com/eladolo/node-js-getting-started",
+  "logo": "https://res.cloudinary.com/chakstudio/image/upload/v1657407981/favicon_e8qk73.png",
+  "keywords": ["node", "express", "heroku", "chakstudio"],
+  "image": "https://res.cloudinary.com/chakstudio/image/upload/v1657407981/favicon_e8qk73.png"
 }

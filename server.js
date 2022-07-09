@@ -27,7 +27,7 @@ app.use(cookieParser());
 // headers middleware
 app.use(function(req, res, next) {
 	res.setHeader('Access-Control-Allow-Origin', '*');
-	res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
 	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
 	next();
 });
@@ -38,9 +38,33 @@ app.listen(PORT, () => {
 // add modules routes
 router.twitch.routes(app);
 // default response
-app.get('/*', async (req, res) => {
+app.post('/*', async (req, res) => {
     res.status(201).json({
     	code: 404,
         data: "Hello api 🌼"
+    });
+});
+app.put('/*', async (req, res) => {
+    res.status(201).json({
+    	code: 404,
+        data: "Hello api 🌼"
+    });
+});
+app.get('/*', async (req, res) => {
+    res.status(201).json({
+    	code: 404,
+        data: "Hello api 🌷"
+    });
+});
+app.patch('/*', async (req, res) => {
+    res.status(201).json({
+    	code: 404,
+        data: "Hello api 🌹"
+    });
+});
+app.delete('/*', async (req, res) => {
+    res.status(201).json({
+    	code: 404,
+        data: "Hello api 🌺"
     });
 });
