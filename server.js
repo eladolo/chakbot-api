@@ -7,7 +7,7 @@ const sessions = require('express-session');
 // Initialize express
 const app = express();
 // create a server
-const PORT = 4555;
+const PORT = process.env.PORT || 4555;
 // API routes
 const router = require('./router');
 
