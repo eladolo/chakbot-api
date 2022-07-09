@@ -1,21 +1,25 @@
 {
-  "name": "node-js-getting-started",
+  "name": "chakstudio API",
   "version": "0.3.0",
-  "description": "A sample Node.js app using Express 4",
+  "description": "A Node.js CRUD api",
   "engines": {
     "node": "16.x"
   },
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node index.js",
+    "api": "nodemon ./server.js",
     "test": "node test.js"
   },
   "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.0.1",
     "ejs": "^3.1.5",
-    "express": "^4.15.2"
+    "express": "^4.15.2",
+    "express-session": "^1.17.3"
   },
   "devDependencies": {
     "got": "^11.3.0",
+    "nodemon": "^2.0.19",
     "tape": "^4.7.0"
   },
   "repository": {
