@@ -4,6 +4,9 @@ require('dotenv').config();
 const express = require('express');
 const cookieParser = require("cookie-parser");
 const session = require('express-session');
+const redis   = require("redis");
+const redisStore = require('connect-redis')(session);
+const client  = redis.createClient();
 const { v4: uuidv4 } = require('uuid');
 // Initialize express
 const app = express();
@@ -15,6 +18,12 @@ const router = require('./router');
 // session management
 app.use(session({
     cookieName: 'chakstudio-api-session',
+    store: new redisStore({
+    	host: process.env.REDIS_HOST,
+		port: process.env.REDIS_PORT,
+		password: process.env.REDIS_PASSWORD,
+    	client: client
+    }),
     secret: process.env.SESSION_SECRET,
     saveUninitialized: true,
     cookie: { maxAge: 1000 * 60 * 60 * 24 },
