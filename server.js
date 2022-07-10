@@ -7,9 +7,8 @@ const session = require('express-session');
 const redis   = require("redis");
 const redisStore = require('connect-redis')(session);
 const client  = redis.createClient({
-	host: process.env.REDIS_HOST,
-	port: process.env.REDIS_PORT,
-	password: process.env.REDIS_PASSWORD
+	url: 'redis://:pc4ff7709665354b21c5b1cdfa6eebb8a4283e0279a41e75f4b52629e9f9292c0@ec2-44-208-60-206.compute-1.amazonaws.com:6480',
+	legacy: true
 });
 const { v4: uuidv4 } = require('uuid');
 // Initialize express
