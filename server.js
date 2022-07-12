@@ -19,7 +19,7 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 // create a server
 const PORT = process.env.PORT || 4555;
-// API routes
+// API routes 
 const router = require('./router');
 
 // session management
@@ -47,7 +47,7 @@ app.use(function(req, res, next) {
     // get the url pathname
     let pathname = req.url.split("/");
     pathname = pathname[pathname.length - 1];
-    console.log("url: " + pathname);
+    console.log("req: " + pathname);
     // count the views
     req.session.views[pathname == "" ? "home" : pathname] = (req.session.views[pathname] || 0) + 1;
     next();
@@ -70,7 +70,9 @@ app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
 // add modules routes
-router.twitch.routes(app);
+Object.entries(router).map(([key, val]) => {
+    val.routes(app);
+});
 // default response
 app.post('/*', async (req, res) => {
     res.status(201).json({
