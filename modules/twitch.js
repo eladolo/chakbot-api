@@ -28,42 +28,42 @@ exports.routes = (app) =>{
 		.then(json => json.json())
 		.then(data => data);
 
-		if(response.error){
-			res.status(500).json({
-				message: response.error
+		if(response.status >= 400){
+			res.status(response.status).json({
+				message: response.message
 			});
-		}
+		} else {
+			let user_response = await fetch('https://api.twitch.tv/helix/users', {
+				headers: {
+					'Authorization': 'Bearer ' + response.access_token,
+					'Client-Id': process.env.TWITCH_CLIENTID
+				},
+			})
+			.then(json => json.json())
+			.then(data => data);
 
-		const user_response = await fetch('https://api.twitch.tv/helix/users', {
-			headers: {
-				'Authorization': 'Bearer ' + response.access_token,
-				'Client-Id': process.env.TWITCH_CLIENTID
-			},
-		})
-		.then(json => json.json())
-		.then(data => data);
+			if(user_response.status >= 400){
+				res.status(user_response.status).json({
+					message: user_response.message
+				});
+			} else {
+				const user_data = user_response.data[0];
 
-		if(user_response.error){
-			res.status(500).json({
-				message: response.error
-			});
-		}
+				req.session.tk = response.access_token;
+				req.session.tk_refresh = response.refresh_token;
 
-		const user_data = user_response.data[0];
-
-		req.session.tk = response.access_token;
-		req.session.tk_refresh = response.refresh_token;
-
-		res.status(201).json({
-			data: {
-				sub: user_data.id,
-				preferred_username: user_data.display_name,
-				email: user_data.email,
-				picture: user_data.profile_image_url,
-				tk: response.access_token,
-				tk_refresh: response.refresh_token
+				res.status(201).json({
+					data: {
+						sub: user_data.id,
+						preferred_username: user_data.display_name,
+						email: user_data.email,
+						picture: user_data.profile_image_url,
+						tk: response.access_token,
+						tk_refresh: response.refresh_token
+					}
+				});
 			}
-		});
+		}
 	});
 
 	// Resfresh token from twitch POST
@@ -92,11 +92,9 @@ exports.routes = (app) =>{
 		.then(json => json.json())
 		.then(data => data);
 
-		console.log(response);
-
-		if(response.error){
+		if(response.status >= 400){
 			res.status(response.status).json({
-				message: response.error
+				message: response.message
 			});
 		} else {
 			const user_response = await fetch('https://api.twitch.tv/helix/users', {
@@ -108,9 +106,9 @@ exports.routes = (app) =>{
 			.then(json => json.json())
 			.then(data => data);
 
-			if(user_response.error){
-				res.status(500).json({
-					message: response.error
+			if(user_response.status >= 400){
+				res.status(user_response.status).json({
+					message: user_response.message
 				});
 			} else {
 				const user_data = user_response.data[0];
@@ -152,7 +150,7 @@ exports.routes = (app) =>{
 		.then(json => json.json())
 		.then(data => data);
 
-		if(response_sugestions.error){
+		if(response_sugestions.status >= 400){
 			res.status(response_sugestions.status).json({
 				status: response_sugestions.status,
 				message: response_sugestions.message
@@ -169,7 +167,7 @@ exports.routes = (app) =>{
 			.then(json => json.json())
 			.then(data => data);
 
-			if(response_streams.error){
+			if(response_streams.status >= 400){
 				res.status(response_streams.status).json({
 					status: response_streams.status,
 					message: response_streams.message
