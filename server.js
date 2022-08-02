@@ -19,7 +19,7 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 // create a server
 const PORT = process.env.PORT || 4555;
-// API routes 
+// API routes
 const router = require('./router');
 
 // session management
@@ -32,8 +32,13 @@ app.use(session({
     	client: client
     }),
     secret: process.env.SESSION_SECRET,
-    saveUninitialized: true,
-    cookie: { maxAge: 1000 * 60 * 60 * 24 },
+    saveUninitialized: false,
+    cookie: {
+      sameSite: false,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 1000 * 60 * 60 * 24,
+      httpOnly: true,
+    },
     resave: false,
     genid: function(req) {
       	console.log('session id created');
@@ -51,7 +56,7 @@ app.use(function(req, res, next) {
     // count the views
     req.session.views[pathname == "" ? "home" : pathname] = (req.session.views[pathname] || 0) + 1;
     next();
-})
+});
 // parse json objects
 app.use(express.json());
 // parse url encoded objects- data sent through the url
@@ -61,6 +66,7 @@ app.use(cookieParser());
 // headers middleware
 app.use(function(req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
     next();
