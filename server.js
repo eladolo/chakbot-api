@@ -4,7 +4,7 @@ require('dotenv').config();
 const express = require('express');
 const cookieParser = require("cookie-parser");
 const session = require('express-session');
-const redis   = require("ioredis");
+// const redis   = require("ioredis");
 // const redisStore = require('connect-redis')(session);
 // const client  = new redis(
 // 	{
