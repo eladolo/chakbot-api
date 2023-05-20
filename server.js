@@ -25,12 +25,12 @@ const router = require('./router');
 // session management
 app.use(session({
     cookieName: 'chakstudio-api-session',
-    store: new redisStore({
-    	host: process.env.REDIS_HOST,
-		port: process.env.REDIS_PORT,
-		password: process.env.REDIS_PASSWORD,
-    	client: client
-    }),
+    // store: new redisStore({
+    // 	host: process.env.REDIS_HOST,
+	// 	port: process.env.REDIS_PORT,
+	// 	password: process.env.REDIS_PASSWORD,
+    // 	client: client
+    // }),
     secret: process.env.SESSION_SECRET,
     saveUninitialized: false,
     cookie: {
