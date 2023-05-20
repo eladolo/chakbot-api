@@ -1,5 +1,5 @@
 {
-  "name": "chakstudio API",
+  "name": "chakstudio-api",
   "version": "0.5.5",
   "description": "A Node.js CRUD api",
   "engines": {

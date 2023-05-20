@@ -6,12 +6,12 @@ const cookieParser = require("cookie-parser");
 const session = require('express-session');
 const redis   = require("ioredis");
 const redisStore = require('connect-redis')(session);
-const client  = redis.createClient(
-	process.env.REDIS_URL,
+const client  = new redis(
 	{
-		tls: {
-        	rejectUnauthorized: false
-        }
+        host: process.env.REDIS_HOST,
+        port: process.env.REDIS_PORT,
+        username: process.env.REDIS_USER,
+        password: process.env.REDIS_PASSWORD
  	}
 );
 const { v4: uuidv4 } = require('uuid');

@@ -350,7 +350,7 @@ exports.routes = (app) =>{
 		.then(json => json.json())
 		.then(data => data);
 
-		if(response_bttv.status >= 400){
+		if(response_bttv.status >= 400 || response_bttv.message == 'user not found'){
 			// res.status(response_bttv.status).json({
 			// 	status: response_bttv.status,
 			// 	message: response_bttv.message
@@ -361,6 +361,8 @@ exports.routes = (app) =>{
 				sharedEmotes: []
 			};
 		}
+
+		console.log(response_bttv);
 
 		const bttv_res = [...response_bttv.channelEmotes, ...response_bttv.sharedEmotes, ...response_global_bttv].map(emote => {
 			return {
