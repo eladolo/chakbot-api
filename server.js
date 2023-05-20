@@ -3,7 +3,7 @@ require('dotenv').config();
 // Require express
 const express = require('express');
 const cookieParser = require("cookie-parser");
-const session = require('express-session');
+const session = require('cookie-session');
 // const redis   = require("ioredis");
 // const redisStore = require('connect-redis')(session);
 // const client  = new redis(
