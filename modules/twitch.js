@@ -1,3 +1,4 @@
+import SevenTV from "7tv";
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 exports.routes = (app) =>{
@@ -236,7 +237,7 @@ exports.routes = (app) =>{
 		}
 	});
 
-	// Retrive emotes from twitch
+	// Retrive emotes from twitch, BTTV and FFZ
 	app.post('/emotes', async (req, res) => {
 		//check if req.body is empty
 		if (!Object.keys(req.body).length) {
@@ -414,6 +415,21 @@ exports.routes = (app) =>{
 			};
 		});
 
+		// retrive 7tv channel emotes
+		const sevenTV_emotes = [];
+		const sevenTV_response = await SevenTV.getEmotes(id)
+		.then(json => json.json())
+		.then(data => data);
+
+		if(sevenTV_response.status == 201){
+			sevenTV_response.data.forEach(emote => {
+				sevenTV_emotes.push({
+					name: emote.name,
+					url: `https://cdn.7tv.app/emote/${emote.id}/2x.webp`
+				});
+			});
+		}
+
 		// send final response with 201 status
 		res.status(201).json({
 			data: {
@@ -421,7 +437,8 @@ exports.routes = (app) =>{
 				emotes: response_emotes.data,
 				uemotes: response_user_emotes,
 				bttv: bttv_res,
-				ffz: ffz_res
+				ffz: ffz_res,
+				sevenTV: sevenTV_emotes
 			}
 		}).send();
 	});
