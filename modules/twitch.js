@@ -1,4 +1,4 @@
-import SevenTV from "7tv";
+const SevenTV = () => import('7tv').then(data => data);
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 exports.routes = (app) =>{

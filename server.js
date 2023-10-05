@@ -39,6 +39,7 @@ app.use(session({
       maxAge: 1000 * 60 * 60 * 24,
       httpOnly: true,
     },
+    keys: [],
     resave: false,
     genid: function(req) {
       	console.log('session id created');
