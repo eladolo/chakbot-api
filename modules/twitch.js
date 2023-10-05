@@ -286,7 +286,7 @@ exports.routes = (app) =>{
 		if(sets != ''){
 			// retrive user emotes from twitch
 			let user_emotes = {};
-			let tmp_sets = sets.split(",");
+			let tmp_sets = sets.split(",").filter(set => set !== 0);
 			if(tmp_sets.length <= 25){
 				tmp_sets = tmp_sets.join("&emote_set_id=");
 				let url = 'https://api.twitch.tv/helix/chat/emotes/set?emote_set_id=' + tmp_sets;
