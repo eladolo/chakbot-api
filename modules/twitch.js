@@ -245,7 +245,7 @@ exports.routes = (app) =>{
 			});
 		}
 		const { token, channel, name, sets } = (req.body);
-		// retrive gloabl emotes from twitch
+		// retrive global emotes from twitch
 		const response_global = await fetch('https://api.twitch.tv/helix/chat/emotes/global', {
 			method: 'GET',
 			headers: {
@@ -282,15 +282,15 @@ exports.routes = (app) =>{
 			return;
 		}
 
-		let response_user_emotes = [];
+		const response_user_emotes = [];
 		if(sets != ''){
 			// retrive user emotes from twitch
 			let user_emotes = {};
-			let tmp_sets = sets.split(",").filter(set => set !== 0);
+			let tmp_sets = sets.split(",").filter(set => set != 0);
 			if(tmp_sets.length <= 25){
 				tmp_sets = tmp_sets.join("&emote_set_id=");
 				let url = 'https://api.twitch.tv/helix/chat/emotes/set?emote_set_id=' + tmp_sets;
-				console.log(url);
+				// console.log(url);
 				user_emotes = await fetch(url, {
 					method: 'GET',
 					headers: {
@@ -308,7 +308,11 @@ exports.routes = (app) =>{
 					}).send();
 					return;
 				}
-			} else{
+
+				user_emotes.data.map(res_em => {
+					response_user_emotes.push(res_em);
+				});
+			} else {
 				const pages = Math.floor(tmp_sets.length / 25);
 
 				for(let pix = 0; pix < pages; pix++){
@@ -362,7 +366,7 @@ exports.routes = (app) =>{
 			};
 		}
 
-		console.log(response_bttv);
+		// console.log(response_bttv);
 
 		const bttv_res = [...response_bttv.channelEmotes, ...response_bttv.sharedEmotes, ...response_global_bttv].map(emote => {
 			return {
