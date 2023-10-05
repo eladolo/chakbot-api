@@ -1,4 +1,4 @@
-const SevenTV = () => import('7tv').then(data => data);
+const SevenTV = require('7tv').default;
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 exports.routes = (app) =>{
@@ -417,9 +417,19 @@ exports.routes = (app) =>{
 
 		// retrive 7tv channel emotes
 		const sevenTV_emotes = [];
-		const sevenTV_response = await SevenTV.getEmotes(id)
-		.then(json => json.json())
-		.then(data => data);
+		const sevenTV_response = await SevenTV.getEmotes(Number(channel))
+		.then(data => {
+			return {
+				status: 201,
+				data: data
+			}
+		})
+		.catch(error => {
+			return {
+				error: error,
+				status:503
+			}
+		});
 
 		if(sevenTV_response.status == 201){
 			sevenTV_response.data.forEach(emote => {
