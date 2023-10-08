@@ -13,3 +13,4 @@ docker-compose.yml
 .env
 *.local
 package-lock.json
+serviceAccount.json
