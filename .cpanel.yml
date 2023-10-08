@@ -1,4 +1,4 @@
 ---
 deployment:
   tasks:
-    - git pull
+    - /bin/git pull
