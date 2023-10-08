@@ -54,6 +54,7 @@ exports.routes = (app) =>{
 	});
 
 	app.post('/subscriptions/webhook', async (req, res) => {
+		console.log(req.body)
 		res.status(201).json(req.body)
 	});
 };
