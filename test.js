@@ -1,28 +1,61 @@
 const { spawn } = require('child_process');
-const got = require('got');
+const got = (...args) => import('got').then((module) => module.default(...args));
 const test = require('tape');
 
 // Start the app
-const env = Object.assign({}, process.env, {PORT: 5000});
+const env = Object.assign({}, process.env, {PORT: 4556});
 const child = spawn('node', ['server.js'], {env});
 
-test('responds to requests', (t) => {
-	t.plan(4);
+let stop = false;
 
+test('responds requests', (t) => {
 	// Wait until the server is ready
-	child.stdout.on('data', _ => {
+	t.plan(15);
+	child.stdout.on('data', async () => {
 		// Make a request to our app
-		(async () => {
-			const response = await got('http://127.0.0.1:5000');
-			// stop the server
-			child.kill();
-			// No error
-			t.false(response.error);
-			// Successful response
-			t.equal(response.statusCode, 200);
-			// Assert content checks
-			t.notEqual(response.body.indexOf("<title>Node.js Getting Started on Heroku</title>"), -1);
-			t.notEqual(response.body.indexOf("Getting Started on Heroku with Node.js"), -1);
-		})();
+		if(!stop) {
+			stop = true;
+			await (async () => {
+				let response = {};
+				try {
+					response = await got('http://127.0.0.1:4556', {method: 'GET'});
+					let body = JSON.parse(response.body);
+					// Assert content checks
+					t.equal(body.code, 404, "should return 404 GET");
+					t.equal(body.hasOwnProperty('data'), true, "should have data GET");
+					t.equal(body.data, "Hello api 🌷", "should have the flower 🌷");
+
+					response = await got('http://127.0.0.1:4556', {method: 'POST'});
+					body = JSON.parse(response.body);
+					// Assert content checks
+					t.equal(body.code, 404, "should return 404 POST");
+					t.equal(body.hasOwnProperty('data'), true, "should have data POST");
+					t.equal(body.data, "Hello api 🌼", "should have the flower 🌼");
+
+					response = await got('http://127.0.0.1:4556', {method: 'PUT'});
+					body = JSON.parse(response.body);
+					// Assert content checks
+					t.equal(body.code, 404, "should return 404 PUT");
+					t.equal(body.hasOwnProperty('data'), true, "should have data PUT");
+					t.equal(body.data, "Hello api 🌼", "should have the flower 🌼");
+
+					response = await got('http://127.0.0.1:4556', {method: 'PATCH'});
+					body = JSON.parse(response.body);
+					// Assert content checks
+					t.equal(body.code, 404, "should return 404 PATCH");
+					t.equal(body.hasOwnProperty('data'), true, "should have data PATCH");
+					t.equal(body.data, "Hello api 🌹", "should have the flower 🌹");
+
+					response = await got('http://127.0.0.1:4556', {method: 'DELETE'});
+					body = JSON.parse(response.body);
+					// stop the server
+					child.kill();
+					// Assert content checks
+					t.equal(body.code, 404, "should return 404 DELETE");
+					t.equal(body.hasOwnProperty('data'), true, "should have data DELETE");
+					t.equal(body.data, "Hello api 🌺", "should have the flower 🌺");
+				} catch (ex) {}
+			})();
+		} 
 	});
 });
