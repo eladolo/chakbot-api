@@ -60,11 +60,17 @@ app.use(function(req, res, next) {
     next();
 });
 // Setup cors
-if (process.env.NODE_ENV === "production") {
+    const whitelist = ["https://bot.chakstudio.com", "https://chakbot-v2.vercel.app", "http://localhost:3000"];
     app.use(cors({
-        origin: ["https://bot.chakstudio.com", "https://chakbot-v2.vercel.app", "http://localhost:3000"]
+        origin: (origin, cb) => {
+            if (whitelist.indexOf(origin) !== -1) {
+                cb(null, true);
+            } else {
+                cb(new Error());
+            }
+        },
+        methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']
     }));
-}
 // parse json objects
 app.use(express.json());
 // parse url encoded objects- data sent through the url
@@ -73,9 +79,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 // headers middleware
 app.use(function(req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    // res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Credentials', true);
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
+    // res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
     next();
 });
