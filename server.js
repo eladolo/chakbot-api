@@ -15,6 +15,7 @@ const session = require('cookie-session');
 //  	}
 // );
 const { v4: uuidv4 } = require('uuid');
+const cors = require('cors');
 // Initialize express
 const app = express();
 // create a server

@@ -1,6 +1,5 @@
 const SevenTV = require('7tv').default;
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-const cors = require('cors');
 
 exports.routes = (app) =>{
 	// Retrive token from twitch POST
