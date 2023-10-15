@@ -67,7 +67,7 @@ app.use(cors({
         if (whitelist.indexOf(origin) !== -1 || whitelist.length === 0) {
             cb(null, true);
         } else {
-            cb(new Error("Origin not allowed"));
+            cb(new Error(`Origin not allowed: '${origin}'`));
         }
     },
     methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']
