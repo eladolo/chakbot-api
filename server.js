@@ -60,7 +60,7 @@ app.use(function(req, res, next) {
     next();
 });
 // Setup cors
-    const whitelist = process.env.WHITE_LIST.split(" ");
+    const whitelist = process.env.WHITE_LIST ? process.env.WHITE_LIST.split(" ") : [];
     app.use(cors({
         origin: (origin, cb) => {
             if (whitelist.indexOf(origin) !== -1 || whitelist.length === 0) {
