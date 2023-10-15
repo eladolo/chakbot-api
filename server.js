@@ -60,13 +60,13 @@ app.use(function(req, res, next) {
     next();
 });
 // Setup cors
-    const whitelist = ["https://bot.chakstudio.com", "https://chakbot-v2.vercel.app", "http://localhost:3000"];
+    const whitelist = process.env.WHITELIST.split(" ");
     app.use(cors({
         origin: (origin, cb) => {
             if (whitelist.indexOf(origin) !== -1) {
                 cb(null, true);
             } else {
-                cb(new Error());
+                cb(new Error("Origin not allowed"));
             }
         },
         methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']
