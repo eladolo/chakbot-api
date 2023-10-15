@@ -60,10 +60,10 @@ app.use(function(req, res, next) {
     next();
 });
 // Setup cors
-    const whitelist = process.env.WHITELIST.split(" ");
+    const whitelist = process.env.WHITELIST ? process.env.WHITELIST.split(" ") : [];
     app.use(cors({
         origin: (origin, cb) => {
-            if (whitelist.indexOf(origin) !== -1) {
+            if (whitelist.indexOf(origin) !== -1 || whitelist.length === 0) {
                 cb(null, true);
             } else {
                 cb(new Error("Origin not allowed"));
