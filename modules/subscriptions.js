@@ -72,12 +72,6 @@ exports.routes = (app) =>{
 				res.status(440).json({'status': 440, data: "event not set"})
 		}
 	});
-	// Setup cors
-	if (process.env.NODE_ENV === "production") {
-		app.use(cors({
-			origin: ["https://bot.chakstudio.com", "https://chakbot-v2.vercel.app"]
-		}));
-	}
 	app.post('/subscriptions/check', async (req, res) => {
 		const { uid, mail } = req.body;
 		if(!uid || !mail) {

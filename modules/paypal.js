@@ -20,12 +20,6 @@ const getToken = async () => {
 };
 
 exports.routes = (app) =>{
-	// Setup cors
-	if (process.env.NODE_ENV === "production") {
-		app.use(cors({
-			origin: ["https://bot.chakstudio.com", "https://chakbot-v2.vercel.app"]
-		}));
-	}
 	app.post('/paypal/check', async (req, res) => {
 		const token = await getToken();
 		res.status(201).json({'status': 201, data: token});

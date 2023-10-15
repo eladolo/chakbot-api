@@ -58,6 +58,12 @@ app.use(function(req, res, next) {
     req.session.views[pathname == "" ? "home" : pathname] = (req.session.views[pathname] || 0) + 1;
     next();
 });
+// Setup cors
+if (process.env.NODE_ENV === "production") {
+    app.use(cors({
+        origin: ["https://bot.chakstudio.com", "https://chakbot-v2.vercel.app", "http://localhost:3000"]
+    }));
+}
 // parse json objects
 app.use(express.json());
 // parse url encoded objects- data sent through the url

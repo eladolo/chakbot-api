@@ -3,12 +3,6 @@ const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch
 const cors = require('cors');
 
 exports.routes = (app) =>{
-	// Setup cors
-	if (process.env.NODE_ENV === "production") {
-		app.use(cors({
-			origin: ["https://bot.chakstudio.com", "https://chakbot-v2.vercel.app"]
-		}));
-	}
 	// Retrive token from twitch POST
 	app.post('/auth', async (req, res) => {
 		//check if req.body is empty
