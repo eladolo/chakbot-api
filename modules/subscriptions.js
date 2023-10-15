@@ -56,6 +56,28 @@ const cancelSubscription = async (res, data) => {
 };
 
 exports.routes = (app) =>{
+	app.post('/subscriptions/webhook', async (req, res) => {
+		const data = req.body.resource;
+		const type = req.body.event_type
+		
+		switch(type) {
+			case 'BILLING.SUBSCRIPTION.ACTIVATED':
+			case 'BILLING.SUBSCRIPTION.UPDATED':
+				return processSubscription(res, data)
+			case 'BILLING.SUBSCRIPTION.EXPIRED':
+			case 'BILLING.SUBSCRIPTION.CANCELLED':
+			case 'BILLING.SUBSCRIPTION.SUSPENDED':
+				return cancelSubscription(res, data)
+			default:
+				res.status(440).json({'status': 440, data: "event not set"})
+		}
+	});
+	// Setup cors
+	if (process.env.NODE_ENV === "production") {
+		app.use(cors({
+			origin: ["https://bot.chakstudio.com", "https://chakbot-v2.vercel.app"]
+		}));
+	}
 	app.post('/subscriptions/check', async (req, res) => {
 		const { uid, mail } = req.body;
 		if(!uid || !mail) {
@@ -84,23 +106,6 @@ exports.routes = (app) =>{
 			}
 		} else {
 			res.status(400).json({'status': 400, message: "not found"});
-		}
-	});
-
-	app.post('/subscriptions/webhook', async (req, res) => {
-		const data = req.body.resource;
-		const type = req.body.event_type
-		
-		switch(type) {
-			case 'BILLING.SUBSCRIPTION.ACTIVATED':
-			case 'BILLING.SUBSCRIPTION.UPDATED':
-				return processSubscription(res, data)
-			case 'BILLING.SUBSCRIPTION.EXPIRED':
-			case 'BILLING.SUBSCRIPTION.CANCELLED':
-			case 'BILLING.SUBSCRIPTION.SUSPENDED':
-				return cancelSubscription(res, data)
-			default:
-				res.status(440).json({'status': 440, data: "event not set"})
 		}
 	});
 };
