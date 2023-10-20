@@ -1,6 +1,30 @@
 const SevenTV = require('7tv').default;
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
+const getAppToken = async() => {
+	// retrive token from twitch
+	const token_res = JSON.stringify({
+		client_id: process.env.TWITCH_CLIENTID,
+		client_secret: process.env.TWITCH_SECRET,
+		grant_type: 'client_credentials'
+	});
+	const response_token = await fetch('https://id.twitch.tv/oauth2/token', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: token_res
+	})
+	.then(json => json.json())
+	.then(data => data);
+
+	if(response_token.status >= 400) {
+		return { 'error': true };
+	} else {
+		return response_token;
+	}
+};
+
 exports.routes = (app) =>{
 	// Retrive token from twitch POST
 	app.post('/auth', async (req, res) => {
@@ -10,7 +34,7 @@ exports.routes = (app) =>{
 				message: 'Request body cannot be empty'
 			});
 		}
-		const { code, scope } = (req.body);
+		const { code } = (req.body);
 		const token_res = JSON.stringify({
 			client_id: process.env.TWITCH_CLIENTID,
 			client_secret: process.env.TWITCH_SECRET,
@@ -451,5 +475,183 @@ exports.routes = (app) =>{
 				sevenTV: sevenTV_emotes
 			}
 		}).send();
+	});
+
+	// EventSubs helpers
+	app.post('/eventsub/subscribe', async (req, res) => {
+		//check if req.body is empty
+		if (!Object.keys(req.body).length) {
+			res.status(400).json({
+				message: 'Request body cannot be empty'
+			});
+		}
+		const { token, user_id, sessid } = (req.body);
+		const topics = [{
+			name:'channel.raid',
+			version: '1',
+			condition: {
+				'from_broadcaster_user_id': user_id
+			},
+			transport: {
+				'method': 'websocket',
+				'session_id': sessid
+			},
+		}, {
+			name:'channel.raid',
+			version: '1',
+			condition: {
+				'to_broadcaster_user_id': user_id
+			},
+			transport: {
+				'method': 'websocket',
+				'session_id': sessid
+			},
+		}, {
+			name:'channel.update',
+			version: '1',
+			condition: {
+				'broadcaster_user_id': user_id
+			},
+			transport: {
+				'method': 'websocket',
+				'session_id': sessid
+			},
+		}, {
+			name:'user.update',
+			version: '1',
+			condition: {
+				'user_id': user_id
+			},
+			transport: {
+				'method': 'websocket',
+				'session_id': sessid
+			},
+		}, {
+			name:'stream.online',
+			version: '1',
+			condition: {
+				'broadcaster_user_id': user_id
+			},
+			transport: {
+				'method': 'websocket',
+				'session_id': sessid
+			},
+		}, {
+			name:'stream.offline',
+			version: '1',
+			condition: {
+				'broadcaster_user_id': user_id
+			},
+			transport: {
+				'method': 'websocket',
+				'session_id': sessid
+			},
+		}];
+		
+		for await (let topic of topics) {
+			const response_global = await fetch('https://api.twitch.tv/helix/eventsub/subscriptions', {
+				method: 'POST',
+				headers: {
+					'Authorization': 'Bearer ' + token,
+					'Client-Id': process.env.TWITCH_CLIENTID,
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					'type': topic.name,
+					'version': topic.version,
+					'condition': topic.condition,
+					'transport': topic.transport
+				})
+			})
+			.then(json => json.json())
+			.then(data => data);
+	
+			if(response_global.status >= 400){
+				console.log(response_global);
+				res.status(response_global.status).json({
+					topic: topic,
+					status: response_global.status,
+					message: response_global.message
+				}).send();
+				return;
+			}
+		}
+		res.status(200).json({
+			status: 'ok'
+		}).send();
+		return;
+	});
+
+	app.post('/eventsub/unsubscribe', async (req, res) => {
+		//check if req.body is empty
+		if (!Object.keys(req.body).length) {
+			res.status(400).json({
+				message: 'Request body cannot be empty'
+			});
+		}
+		const { token, eventid } = (req.body);
+		
+		const response_global = await fetch('https://api.twitch.tv/helix/eventsub/subscriptions?id=' + eventid, {
+			method: 'DELETE',
+			headers: {
+				'Authorization': 'Bearer ' + token,
+				'Client-Id': process.env.TWITCH_CLIENTID
+			}
+		})
+		.then(data => data);
+
+		if(response_global.status >= 400){
+			console.log(response_global);
+			res.status(response_global.status).json({
+				error: true,
+				message: response_global
+			}).send();
+			return;
+		}
+
+		res.status(200).json({
+			status: 'ok'
+		}).send();
+		return;
+	});
+
+	app.post('/eventsub', async (req, res) => {
+		//check if req.body is empty
+		if (!Object.keys(req.body).length) {
+			res.status(400).json({
+				message: 'Request body cannot be empty'
+			});
+		}
+		const { user_id, token } = (req.body);
+		
+		let url = 'https://api.twitch.tv/helix/eventsub/subscriptions'
+		if (user_id) {
+			url += `?user_id=${user_id}`
+		}
+		const response_global = await fetch(url, {
+			method: 'GET',
+			headers: {
+				'Authorization': 'Bearer ' + token,
+				'Client-Id': process.env.TWITCH_CLIENTID,
+				'Content-Type': 'application/json'
+			}
+		})
+		.then(json => json.json())
+		.then(data => data);
+
+		if(response_global.status >= 400){
+			console.log(response_global);
+			res.status(response_global.status).json({
+				status: response_global.status,
+				message: response_global.message
+			}).send();
+			return;
+		} else {
+			res.status(200).json({
+				events: response_global
+			}).send();
+			return;
+		}
+
 	});
 };
